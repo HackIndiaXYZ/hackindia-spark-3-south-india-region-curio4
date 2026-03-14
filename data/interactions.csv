@@ -1,0 +1,30 @@
+drug_a,drug_b,severity,message
+warfarin,aspirin,CRITICAL,Greatly increases bleeding risk. Life-threatening hemorrhage possible. Avoid unless closely monitored.
+warfarin,ibuprofen,CRITICAL,NSAIDs intensify warfarin's blood-thinning effect. Avoid this combination entirely.
+warfarin,diclofenac,CRITICAL,NSAIDs like diclofenac significantly increase warfarin-related bleeding risk.
+alprazolam,tramadol,CRITICAL,Combining benzodiazepines with opioids can cause life-threatening respiratory depression.
+clonazepam,tramadol,CRITICAL,Opioid + benzodiazepine combination: severe respiratory depression risk.
+amiodarone,simvastatin,CRITICAL,Amiodarone greatly raises simvastatin levels causing severe muscle breakdown (rhabdomyolysis).
+warfarin,amoxicillin,HIGH,Antibiotics can enhance warfarin's effect. Requires frequent INR monitoring.
+warfarin,azithromycin,HIGH,Azithromycin increases warfarin anticoagulation. Monitor INR closely.
+warfarin,ciprofloxacin,HIGH,Fluoroquinolones can greatly increase warfarin's effect. Requires INR monitoring.
+warfarin,metronidazole,HIGH,Metronidazole significantly increases warfarin levels. Bleeding risk is high.
+amlodipine,simvastatin,HIGH,Amlodipine raises simvastatin to toxic levels. Do not exceed simvastatin 20mg.
+sertraline,tramadol,HIGH,Risk of serotonin syndrome. Signs: agitation, fever, rapid heartbeat. Seek immediate help.
+fluoxetine,tramadol,HIGH,Risk of serotonin syndrome and seizures. This combination should generally be avoided.
+metoprolol,amiodarone,HIGH,Both slow the heart. Combination can cause dangerous bradycardia or heart block.
+digoxin,amiodarone,HIGH,Amiodarone increases digoxin levels significantly. Toxicity risk. Reduce digoxin dose.
+lisinopril,ibuprofen,HIGH,NSAIDs reduce blood pressure-lowering effect and increase kidney damage risk.
+losartan,ibuprofen,HIGH,NSAIDs blunt ARB effectiveness and raise risk of acute kidney injury.
+warfarin,paracetamol,MODERATE,Regular paracetamol can slightly increase anticoagulant effect. Monitor INR.
+warfarin,atorvastatin,MODERATE,May increase warfarin levels. INR monitoring recommended.
+amlodipine,atorvastatin,MODERATE,Amlodipine can increase atorvastatin blood levels raising muscle-pain risk.
+aspirin,ibuprofen,MODERATE,Ibuprofen can block aspirin's heart-protective effect. Take aspirin first if both needed.
+metformin,furosemide,MODERATE,Furosemide may increase metformin levels and lactic acidosis risk.
+digoxin,furosemide,MODERATE,Furosemide causes potassium loss which increases digoxin toxicity risk.
+clopidogrel,omeprazole,MODERATE,Omeprazole reduces clopidogrel activation. Use pantoprazole if PPI needed.
+prednisolone,ibuprofen,HIGH,Corticosteroids + NSAIDs greatly increase risk of peptic ulcers and GI bleeding.
+prednisolone,warfarin,MODERATE,Steroids can both increase and decrease warfarin effect. INR monitoring required.
+levothyroxine,calcium,MODERATE,Calcium reduces levothyroxine absorption. Take thyroid medicine 4 hours apart from calcium.
+phenytoin,warfarin,HIGH,Phenytoin can both increase and decrease warfarin effect unpredictably. INR monitoring essential.
+allopurinol,warfarin,MODERATE,Allopurinol can increase warfarin anticoagulant effect. Monitor INR.
