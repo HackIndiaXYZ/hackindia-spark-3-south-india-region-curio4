@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MedIntel – AI Prescription Explainer</title>
+  <link rel="stylesheet" href="/static/style.css"/>
+</head>
+<body class="landing-body">
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="/" class="brand">
+      <img src="/static/logo.svg" class="brand-logo" alt="MedIntel Logo"/>
+      <div class="brand-text">
+        <span class="brand-name">MedIntel</span>
+        <span class="brand-sub">AI Prescription Explainer</span>
+      </div>
+    </a>
+    <nav class="nav-links">
+      <a href="/#features" class="nav-link">Features</a>
+      <a href="/#how" class="nav-link">How it works</a>
+    </nav>
+    <div class="header-right">
+      <a href="/login"    class="btn-ghost">Log In</a>
+      <a href="/register" class="btn-primary-sm">Register Free →</a>
+    </div>
+  </div>
+</header>
+
+<section class="landing-hero">
+  <div class="landing-hero-inner">
+    <div class="landing-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12h6M12 9v6M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      AI-Powered · Free to Use · Multi-language
+    </div>
+    <h1 class="landing-title">
+      Understand every medicine<br>
+      <span class="gradient-text">on your prescription.</span>
+    </h1>
+    <p class="landing-sub">
+      Upload a prescription image. MedIntel reads it with AI-powered OCR,
+      identifies every drug, explains them in plain language — in English, हिंदी, or தமிழ் —
+      and alerts you to dangerous interactions in seconds.
+    </p>
+    <div class="landing-cta">
+      <a href="/register" class="btn-landing-primary">
+        Get Started Free
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="/login" class="btn-landing-ghost">I already have an account</a>
+    </div>
+
+    <!-- Language pills -->
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:24px;flex-wrap:wrap">
+      <span style="font-size:13px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);padding:5px 14px;border-radius:20px;color:#8b9cb8">🇬🇧 English</span>
+      <span style="font-size:13px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);padding:5px 14px;border-radius:20px;color:#8b9cb8">🇮🇳 हिंदी</span>
+      <span style="font-size:13px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);padding:5px 14px;border-radius:20px;color:#8b9cb8">🇮🇳 தமிழ்</span>
+    </div>
+  </div>
+
+  <!-- How it works -->
+  <div id="how" style="text-align:center;margin-bottom:52px">
+    <p class="section-label" style="margin-bottom:28px;font-size:13px">How it works</p>
+    <div style="display:flex;gap:0;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px">
+      {% for step in [('📷','Upload','Take a photo of your prescription'),('🔍','OCR reads it','EasyOCR + OpenCV extracts text'),('💊','Match drugs','50+ drug database with fuzzy match'),('🔊','Explain it','AI explains in your language')] %}
+      <div style="text-align:center;padding:20px 18px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;min-width:150px;max-width:180px">
+        <div style="font-size:28px;margin-bottom:8px">{{ step[0] }}</div>
+        <div style="font-weight:700;font-size:13px;margin-bottom:4px">{{ step[1] }}</div>
+        <div style="font-size:11px;color:#4b5c75;line-height:1.5">{{ step[2] }}</div>
+      </div>
+      {% if not loop.last %}
+      <div style="color:#2d3a4e;font-size:20px;padding:0 4px">→</div>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <div id="features">
+    <p class="section-label" style="text-align:center;margin-bottom:24px;font-size:13px">Features</p>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <h3>Smart OCR</h3>
+        <p>EasyOCR + OpenCV reads handwritten and printed prescriptions with high accuracy.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💊</div>
+        <h3>50+ Drug Database</h3>
+        <p>Detailed dosage, side effects, uses, and warnings for every medicine.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Interaction Alerts</h3>
+        <p>Checks all drug pairs for CRITICAL, HIGH, and MODERATE interaction risks.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔊</div>
+        <h3>Multi-language Voice</h3>
+        <p>Listen to medicine explanations in English, Hindi, or Tamil — great for all patients.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🛡️</div>
+        <h3>Safety Alerts</h3>
+        <p>Flags medicines unsafe for pregnant women, liver, or kidney patients.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📁</div>
+        <h3>Prescription History</h3>
+        <p>Every scan saved securely. Access full reports anytime from your dashboard.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="landing-footer">
+  <p>⚕️ <strong>Medical Disclaimer:</strong> MedIntel is for educational purposes only. Always consult a licensed pharmacist or physician before making medication decisions.</p>
+</footer>
+
+</body>
+</html>

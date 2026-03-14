@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Analyze Prescription – MedIntel</title>
+  <link rel="stylesheet" href="/static/style.css"/>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="/dashboard" class="brand">
+      <img src="/static/logo.svg" class="brand-logo" alt="MedIntel"/>
+      <div class="brand-text">
+        <span class="brand-name">MedIntel</span>
+        <span class="brand-sub">AI Prescription Explainer</span>
+      </div>
+    </a>
+    <nav class="nav-links">
+      <a href="/dashboard"    class="nav-link">📁 Dashboard</a>
+      <a href="/analyze-page" class="nav-link active">🔬 New Scan</a>
+    </nav>
+    <div class="header-right">
+      <div class="nav-user">
+        <div class="nav-user-avatar">{{ user.name[0].upper() }}</div>
+        {{ user.name }}
+      </div>
+      <button class="btn-ghost" id="btn-reset" style="display:none" onclick="resetApp()">← New Scan</button>
+      <a href="/logout" class="btn-ghost">Log Out</a>
+    </div>
+  </div>
+</header>
+
+<main class="main-container">
+
+  <!-- ════ UPLOAD STAGE ════ -->
+  <section id="stage-upload" class="stage active">
+    <div class="upload-layout">
+      <div class="upload-left">
+        <div class="hero">
+          <h1 class="hero-title">
+            Analyze your prescription<br>
+            <span class="gradient-text">in plain language.</span>
+          </h1>
+          <p class="hero-sub">
+            Upload a prescription image — EasyOCR + OpenCV reads it, our matcher identifies medicines,
+            Claude AI explains them, and we check for dangerous interactions. Results are saved to your dashboard.
+          </p>
+        </div>
+
+        <div class="form-group" style="margin-bottom:18px">
+          <label class="form-label">Prescription label <span style="color:#4b5c75;font-size:11px;font-weight:400">(optional)</span></label>
+          <input type="text" id="prescription-title" class="form-input"
+                 placeholder="e.g. Dr. Smith – March 2025, Post-surgery meds…"
+                 style="max-width:480px"/>
+        </div>
+
+        <div class="mode-tabs">
+          <button class="mode-tab active" onclick="switchMode('upload', event)">📷 Upload Image</button>
+          <button class="mode-tab" onclick="switchMode('text', event)">✏️ Type / Paste</button>
+        </div>
+
+        <div id="mode-upload" class="input-panel">
+          <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+            <input type="file" id="file-input" accept="image/*" style="display:none" onchange="handleFileSelect(this)"/>
+            <div class="drop-icon">📋</div>
+            <p class="drop-title">Drop prescription image here</p>
+            <p class="drop-sub">JPG · PNG · HEIC · up to 20 MB</p>
+            <div class="drop-pills">
+              <span>🔍 EasyOCR + OpenCV</span>
+              <span>💊 50+ drug database</span>
+              <span>⚡ Interaction alerts</span>
+              <span>🔊 3 languages</span>
+            </div>
+          </div>
+
+          <!-- Voice options -->
+          <div style="margin-top:14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px">
+            <label class="voice-toggle" style="margin-bottom:10px">
+              <input type="checkbox" id="enable-voice" onchange="toggleVoiceLangs()"/>
+              🔊 Generate voice audio (multi-language)
+            </label>
+            <div id="voice-lang-row" style="display:none;gap:8px;flex-wrap:wrap;margin-top:8px">
+              <span style="font-size:12px;color:#4b5c75;align-self:center">Language:</span>
+              <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:#8b9cb8;cursor:pointer">
+                <input type="checkbox" name="voice_lang" value="en" checked style="accent-color:var(--cyan)"/> 🇬🇧 English
+              </label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:#8b9cb8;cursor:pointer">
+                <input type="checkbox" name="voice_lang" value="hi" style="accent-color:var(--cyan)"/> 🇮🇳 Hindi
+              </label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:13px;color:#8b9cb8;cursor:pointer">
+                <input type="checkbox" name="voice_lang" value="ta" style="accent-color:var(--cyan)"/> 🇮🇳 Tamil
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div id="mode-text" class="input-panel" style="display:none">
+          <textarea id="manual-text" placeholder="Paste prescription text or list medicines here&#10;e.g. Metformin 500mg twice daily, Warfarin 5mg, Aspirin 75mg…"></textarea>
+          <button class="btn-primary" onclick="analyzeText()" style="margin-top:12px">Analyze Medicines →</button>
+        </div>
+
+        <div id="upload-error" class="error-box" style="display:none"></div>
+      </div>
+
+      <div class="upload-right">
+        <p class="section-label" style="margin-bottom:14px">Try a sample</p>
+        <div id="sample-list"></div>
+        <div class="disclaimer-box">
+          ⚠️ <strong>Note:</strong> This tool is for educational purposes only.
+          Always consult a licensed pharmacist or physician.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ SCANNING STAGE ════ -->
+  <section id="stage-scanning" class="stage">
+    <div class="scanning-center">
+      <div class="scan-spinner-wrap">
+        <div class="scan-spinner"></div>
+      </div>
+      <h2 class="scan-title">Analyzing Prescription</h2>
+      <p class="scan-step" id="scan-step">Initializing…</p>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <p class="progress-pct" id="progress-pct">0%</p>
+    </div>
+  </section>
+
+  <!-- ════ RESULTS STAGE ════ -->
+  <section id="stage-results" class="stage">
+    <div class="summary-grid" id="summary-grid"></div>
+    <div id="critical-banner" class="critical-banner" style="display:none"></div>
+
+    <div class="results-layout">
+      <div class="results-main">
+        <div class="tabs">
+          <button class="tab active" data-tab="medicines"    onclick="switchTab(this,'medicines')">💊 Medicines</button>
+          <button class="tab" data-tab="interactions"        onclick="switchTab(this,'interactions')">⚡ Interactions</button>
+          <button class="tab" data-tab="safety"              onclick="switchTab(this,'safety')">🛡️ Safety</button>
+          <button class="tab" data-tab="schedule"            onclick="switchTab(this,'schedule')">🗓️ Schedule</button>
+          <button class="tab" data-tab="ocr"                 onclick="switchTab(this,'ocr')">📄 OCR Text</button>
+        </div>
+        <div id="tab-medicines"    class="tab-panel active"></div>
+        <div id="tab-interactions" class="tab-panel"></div>
+        <div id="tab-safety"       class="tab-panel"></div>
+        <div id="tab-schedule"     class="tab-panel"></div>
+        <div id="tab-ocr"          class="tab-panel"></div>
+      </div>
+
+      <div class="results-sidebar">
+        <div id="sidebar-image-wrap" style="display:none">
+          <img id="sidebar-image" alt="Uploaded prescription"/>
+          <p class="sidebar-image-label">📷 Analyzed via EasyOCR + OpenCV</p>
+        </div>
+
+        <div class="saved-notice" id="saved-notice" style="display:none">
+          <span>✅ Saved to your</span>
+          <a href="/dashboard">Dashboard →</a>
+        </div>
+
+        <div class="sidebar-card" style="margin-bottom:12px">
+          <p class="card-label">Detected Medicines</p>
+          <div id="sidebar-med-items"></div>
+        </div>
+
+        <!-- Multilingual audio section -->
+        <div id="audio-section" style="display:none">
+          <div class="sidebar-card">
+            <p class="card-label">🔊 Voice Readout</p>
+            <div class="lang-tabs" id="audio-lang-tabs"></div>
+            <div id="audio-lang-panels"></div>
+          </div>
+        </div>
+
+        <div class="disclaimer-box" style="margin-top:12px">
+          ⚕️ <strong>Medical Disclaimer</strong><br>
+          Educational purposes only. Always consult a licensed pharmacist or physician.
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="/static/script.js"></script>
+</body>
+</html>

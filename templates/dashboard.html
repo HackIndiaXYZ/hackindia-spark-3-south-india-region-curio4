@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard – MedIntel</title>
+  <link rel="stylesheet" href="/static/style.css"/>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="/dashboard" class="brand">
+      <img src="/static/logo.svg" class="brand-logo" alt="MedIntel"/>
+      <div class="brand-text">
+        <span class="brand-name">MedIntel</span>
+        <span class="brand-sub">AI Prescription Explainer</span>
+      </div>
+    </a>
+    <nav class="nav-links">
+      <a href="/dashboard"    class="nav-link active">📁 Dashboard</a>
+      <a href="/analyze-page" class="nav-link">🔬 New Scan</a>
+    </nav>
+    <div class="header-right">
+      <div class="nav-user">
+        <div class="nav-user-avatar">{{ user.name[0].upper() }}</div>
+        {{ user.name }}
+      </div>
+      <a href="/logout" class="btn-ghost">Log Out</a>
+    </div>
+  </div>
+</header>
+
+<main class="main-container">
+
+  <div class="dash-header">
+    <div>
+      <h1 class="dash-title">Your Prescriptions</h1>
+      <p class="dash-sub">All analyzed prescriptions saved securely and accessible anytime.</p>
+    </div>
+    <a href="/analyze-page" class="btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+      Analyze New Prescription
+    </a>
+  </div>
+
+  <div class="dash-stats">
+    <div class="dash-stat-card">
+      <div class="ds-value">{{ history|length }}</div>
+      <div class="ds-label">Total Scans</div>
+    </div>
+    <div class="dash-stat-card">
+      <div class="ds-value">{{ history|selectattr('interaction_count','gt',0)|list|length }}</div>
+      <div class="ds-label">With Interactions</div>
+    </div>
+    <div class="dash-stat-card">
+      <div class="ds-value">{{ history|sum(attribute='med_count') }}</div>
+      <div class="ds-label">Medicines Analyzed</div>
+    </div>
+  </div>
+
+  {% if history %}
+  <div class="history-grid" id="history-grid">
+    {% for item in history %}
+    <div class="history-card" id="hcard-{{ item.id }}">
+      <div class="hcard-top">
+        <div class="hcard-icon">💊</div>
+        <div class="hcard-meta">
+          <p class="hcard-title">{{ item.title }}</p>
+          <p class="hcard-date">{{ item.created_at[:10] }}</p>
+        </div>
+        <button class="hcard-delete" onclick="deleteHistory('{{ item.id }}')" title="Delete">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>
+          </svg>
+        </button>
+      </div>
+      <div class="hcard-badges">
+        <span class="hcard-badge blue">💊 {{ item.med_count }} medicine{{ 's' if item.med_count != 1 }}</span>
+        {% if item.interaction_count > 0 %}
+        <span class="hcard-badge red">⚡ {{ item.interaction_count }} interaction{{ 's' if item.interaction_count != 1 }}</span>
+        {% else %}
+        <span class="hcard-badge green">✅ No interactions</span>
+        {% endif %}
+      </div>
+      {% if item.medicines %}
+      <p class="hcard-meds">{{ item.medicines }}</p>
+      {% endif %}
+      <a href="/prescription/{{ item.id }}" class="hcard-view-btn">View Full Report →</a>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">📋</div>
+    <h2 class="empty-title">No prescriptions yet</h2>
+    <p class="empty-sub">Upload your first prescription to get started. Every analysis is saved here so you can review it anytime.</p>
+    <a href="/analyze-page" class="btn-primary">Analyze Your First Prescription →</a>
+  </div>
+  {% endif %}
+
+</main>
+
+<script>
+function deleteHistory(id) {
+  if (!confirm('Delete this prescription from your history? This cannot be undone.')) return;
+  fetch('/history/' + id, { method: 'DELETE' })
+    .then(r => r.json())
+    .then(d => {
+      if (d.ok) {
+        const card = document.getElementById('hcard-' + id);
+        card.style.transition = 'opacity 0.3s, transform 0.3s';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.95)';
+        setTimeout(() => card.remove(), 350);
+      }
+    });
+}
+</script>
+</body>
+</html>

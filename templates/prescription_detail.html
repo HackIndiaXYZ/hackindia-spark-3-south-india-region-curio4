@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ data.title }} – MedIntel</title>
+  <link rel="stylesheet" href="/static/style.css"/>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="/dashboard" class="brand">
+      <img src="/static/logo.svg" class="brand-logo" alt="MedIntel"/>
+      <div class="brand-text">
+        <span class="brand-name">MedIntel</span>
+        <span class="brand-sub">AI Prescription Explainer</span>
+      </div>
+    </a>
+    <nav class="nav-links">
+      <a href="/dashboard"    class="nav-link">📁 Dashboard</a>
+      <a href="/analyze-page" class="nav-link">🔬 New Scan</a>
+    </nav>
+    <div class="header-right">
+      <div class="nav-user">
+        <div class="nav-user-avatar">{{ user.name[0].upper() }}</div>
+        {{ user.name }}
+      </div>
+      <a href="/logout" class="btn-ghost">Log Out</a>
+    </div>
+  </div>
+</header>
+
+<main class="main-container">
+
+  <div class="detail-header">
+    <p class="detail-breadcrumb"><a href="/dashboard">Dashboard</a> / Prescription Report</p>
+    <h1 class="detail-title">{{ data.title }}</h1>
+    <p class="detail-date">Analyzed on {{ data.created_at[:10] }}</p>
+  </div>
+
+  <div class="summary-grid" style="margin-bottom:22px">
+    <div class="summary-card">
+      <div class="s-label">Medicines Found</div>
+      <div class="s-value" style="color:#06b6d4">{{ data.med_count }}</div>
+    </div>
+    <div class="summary-card">
+      <div class="s-label">Interactions</div>
+      <div class="s-value" style="color:{{ '#ef4444' if data.interaction_count > 0 else '#10b981' }}">{{ data.interaction_count }}</div>
+    </div>
+    <div class="summary-card">
+      <div class="s-label">Critical Alerts</div>
+      {% set crit = data.result.interactions | selectattr('severity','eq','CRITICAL') | list | length %}
+      <div class="s-value" style="color:{{ '#dc2626' if crit > 0 else '#10b981' }}">{{ crit }}</div>
+    </div>
+    <div class="summary-card">
+      <div class="s-label">Status</div>
+      <div class="s-value" style="color:{{ '#10b981' if data.interaction_count == 0 else '#f59e0b' }}">
+        {{ 'Safe' if data.interaction_count == 0 else 'Review' }}
+      </div>
+    </div>
+  </div>
+
+  <div class="results-layout">
+    <div class="results-main">
+      <p class="section-label" style="margin-bottom:12px">Medicines Detected</p>
+      <div class="med-cards" style="margin-bottom:28px">
+        {% for med in data.result.medicines %}
+        <div class="med-card">
+          <div class="med-card-header" style="cursor:default">
+            <div class="med-dot-wrap" style="background:{{ med.color }}22">
+              <div class="med-dot" style="background:{{ med.color }}"></div>
+            </div>
+            <div class="med-info">
+              <div class="med-name">{{ med.generic }}</div>
+              <div class="med-sub">{{ med.brand[:2]|join(', ') }} · {{ med.category }}</div>
+            </div>
+            <div class="med-badges">
+              {% if med.warnings.pregnancy %}<span class="badge badge-preg">Preg</span>{% endif %}
+              {% if med.warnings.liver %}<span class="badge badge-liver">Liver</span>{% endif %}
+              {% if med.warnings.kidney %}<span class="badge badge-kidney">Kidney</span>{% endif %}
+            </div>
+          </div>
+          <div class="med-card-body" style="display:block;border-top:1px solid var(--border)">
+            <div class="med-grid">
+              <div class="med-info-cell">
+                <div class="cell-label">Uses</div>
+                <div class="cell-text">{{ med.uses }}</div>
+              </div>
+              <div class="med-info-cell">
+                <div class="cell-label">Dosage</div>
+                <div class="cell-text">{{ med.dosage }}</div>
+              </div>
+            </div>
+            {% if med.explanation %}
+            <div class="ai-expl-box">
+              <div class="ai-expl-label">✨ AI PLAIN-LANGUAGE EXPLANATION</div>
+              <div class="ai-expl-text">{{ med.explanation }}</div>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      {% if data.result.interactions %}
+      <p class="section-label" style="margin-bottom:12px">Drug Interactions</p>
+      <div class="int-cards" style="margin-bottom:28px">
+        {% for i in data.result.interactions %}
+        <div class="int-card {{ i.severity }}">
+          <div class="int-header">
+            <span class="severity-badge {{ i.severity }}">
+              {{ '🚨' if i.severity == 'CRITICAL' else ('⚠️' if i.severity == 'HIGH' else '💛') }} {{ i.severity }}
+            </span>
+            <span class="int-drugs">{{ i.drug_a }} + {{ i.drug_b }}</span>
+          </div>
+          <div class="int-msg">{{ i.message }}</div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <p class="section-label" style="margin-bottom:12px">Extracted OCR Text</p>
+      <div class="ocr-box">
+        <pre class="ocr-pre">{{ data.ocr_text or '(No text available)' }}</pre>
+      </div>
+    </div>
+
+    <div class="results-sidebar">
+      <div class="sidebar-card">
+        <p class="card-label">Medicines</p>
+        {% for med in data.result.medicines %}
+        <div class="sb-med-item">
+          <div class="sb-dot" style="background:{{ med.color }}"></div>
+          <div>
+            <div class="sb-med-name">{{ med.generic }}</div>
+            <div class="sb-med-cat">{{ med.category }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="disclaimer-box" style="margin-top:14px">
+        ⚕️ <strong>Medical Disclaimer</strong><br>
+        Educational purposes only. Always consult a licensed pharmacist or physician.
+      </div>
+    </div>
+  </div>
+
+</main>
+</body>
+</html>
